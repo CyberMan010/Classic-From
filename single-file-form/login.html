@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Login Form</title>
+    <style>
+        :root {
+            --primary-color: #4f46e5;
+            --error-color: #ef4444;
+            --success-color: #10b981;
+            --text-color: #1f2937;
+            --bg-color: #f9fafb;
+            --card-bg: #ffffff;
+            --border-color: #e5e7eb;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 1rem;
+            color: var(--text-color);
+        }
+
+        .form-container {
+            width: 100%;
+            max-width: 400px;
+            background-color: var(--card-bg);
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            padding: 2rem;
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-header p {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            border: 1px solid var(--border-color);
+            border-radius: 0.375rem;
+            transition: border-color 0.15s ease-in-out;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .error-message {
+            color: var(--error-color);
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
+            min-height: 1rem;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            font-weight: 500;
+            text-align: center;
+            border: none;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: all 0.15s ease-in-out;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #4338ca;
+        }
+
+        .btn-primary:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.4);
+        }
+
+        .success-message {
+            color: var(--success-color);
+            text-align: center;
+            margin-top: 1rem;
+            font-weight: 500;
+            display: none;
+        }
+
+        @media (max-width: 640px) {
+            .form-container {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <div class="form-header">
+            <h1>Welcome Back</h1>
+            <p>Sign in to your account</p>
+        </div>
+        <form id="loginForm" novalidate>
+            <!-- Form fields will be dynamically inserted here -->
+        </form>
+        <div id="successMessage" class="success-message">Successfully logged in!</div>
+    </div>
+
+    <script>
+        // Form configuration JSON - You can extend this to add more fields
+        const formConfig = {
+            "formTitle": "Welcome Back",
+            "formSubtitle": "Sign in to your account",
+            "submitButtonText": "Sign In",
+            "successMessage": "Successfully logged in!",
+            "fields": [
+                {
+                    "id": "email",
+                    "type": "email",
+                    "label": "Email Address",
+                    "placeholder": "example@domain.com",
+                    "required": true,
+                    "validation": {
+                        "pattern": "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$",
+                        "message": "Please enter a valid email address"
+                    }
+                },
+                {
+                    "id": "password",
+                    "type": "password",
+                    "label": "Password",
+                    "placeholder": "Enter your password",
+                    "required": true,
+                    "validation": {
+                        "minLength": 8,
+                        "message": "Password must be at least 8 characters"
+                    }
+                }
+            ]
+        };
+
+        // Function to dynamically generate form fields from JSON config
+        function generateFormFields(config) {
+            const form = document.getElementById('loginForm');
+            form.innerHTML = ''; // Clear any existing content
+
+            // Update form header
+            const formHeader = document.querySelector('.form-header');
+            formHeader.querySelector('h1').textContent = config.formTitle;
+            formHeader.querySelector('p').textContent = config.formSubtitle;
+
+            // Update success message
+            const successMessage = document.getElementById('successMessage');
+            successMessage.textContent = config.successMessage;
+
+            // Generate form fields
+            config.fields.forEach(field => {
+                const formGroup = document.createElement('div');
+                formGroup.className = 'form-group';
+
+                const label = document.createElement('label');
+                label.setAttribute('for', field.id);
+                label.textContent = field.label;
+                formGroup.appendChild(label);
+
+                const input = document.createElement('input');
+                input.className = 'form-control';
+                input.id = field.id;
+                input.name = field.id;
+                input.type = field.type;
+                input.placeholder = field.placeholder;
+                if (field.required) input.required = true;
+                formGroup.appendChild(input);
+
+                const errorMessage = document.createElement('div');
+                errorMessage.className = 'error-message';
+                errorMessage.id = `${field.id}-error`;
+                formGroup.appendChild(errorMessage);
+
+                form.appendChild(formGroup);
+            });
+
+            // Add submit button
+            const submitBtn = document.createElement('button');
+            submitBtn.type = 'submit';
+            submitBtn.className = 'btn btn-primary';
+            submitBtn.textContent = config.submitButtonText;
+            form.appendChild(submitBtn);
+        }
+
+        // Function to validate form
+        function validateForm(event) {
+            event.preventDefault();
+            let isValid = true;
+
+            formConfig.fields.forEach(field => {
+                const input = document.getElementById(field.id);
+                const errorElement = document.getElementById(`${field.id}-error`);
+                errorElement.textContent = ''; // Clear previous error
+
+                // Check if required
+                if (field.required && !input.value.trim()) {
+                    errorElement.textContent = `${field.label} is required`;
+                    isValid = false;
+                    return;
+                }
+
+                // Check pattern if defined
+                if (field.validation && field.validation.pattern && input.value) {
+                    const regex = new RegExp(field.validation.pattern);
+                    if (!regex.test(input.value)) {
+                        errorElement.textContent = field.validation.message;
+                        isValid = false;
+                        return;
+                    }
+                }
+
+                // Check minLength if defined
+                if (field.validation && field.validation.minLength && input.value) {
+                    if (input.value.length < field.validation.minLength) {
+                        errorElement.textContent = field.validation.message;
+                        isValid = false;
+                        return;
+                    }
+                }
+            });
+
+            // Form successful submission
+            if (isValid) {
+                document.getElementById('successMessage').style.display = 'block';
+                setTimeout(() => {
+                    document.getElementById('successMessage').style.display = 'none';
+                }, 3000);
+            }
+
+            return isValid;
+        }
+
+        // Initialize the form
+        document.addEventListener('DOMContentLoaded', () => {
+            // Generate form fields from config
+            generateFormFields(formConfig);
+            
+            // Add form validation
+            const form = document.getElementById('loginForm');
+            form.addEventListener('submit', validateForm);
+        });
+    </script>
+</body>
+</html>
